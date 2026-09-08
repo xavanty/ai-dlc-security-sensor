@@ -46,6 +46,8 @@ sensors:
   - linter
   - type-check
   - traceability
+  - sca-sast
+  - opa-terraform
 scopes:
   - enterprise
   - feature
@@ -405,11 +407,15 @@ the record dir); the planning, plan-approval, and summary artefacts
 `unit-test-instructions.md`, `code-summary.md`) live under
 `<code-generation-record>/`.
 
-Imports: `required-sections`, `linter`, `type-check`, `traceability`.
+Imports: `required-sections`, `linter`, `type-check`, `traceability`, `sca-sast`, `opa-terraform`.
 
 `required-sections` checks each planning and summary artefact for at least two
 H2 headings. `linter` and `type-check` run against matching generated code,
 and `traceability` verifies the per-Unit coverage table and every `OK` target.
+`sca-sast` fires on packaged artifact writes (SAST via downloaded Veracode CLI, fallback Pipeline Scan JAR)
+and lockfile/manifest writes (SCA via downloaded Veracode CLI). `opa-terraform`
+fires on `*.tf` / `*.tf.json` writes, validating Terraform with conftest or OPA
+against project policies or bundled AWS default denies.
 
 `upstream-coverage` is intentionally NOT imported because the stage consumes a
 broad, scope-dependent design set. `source-manifest.json` is

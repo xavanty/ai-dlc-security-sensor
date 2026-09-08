@@ -2372,7 +2372,9 @@
       "required-sections",
       "linter",
       "type-check",
-      "traceability"
+      "traceability",
+      "sca-sast",
+      "opa-terraform"
     ],
     "scopes": [
       "enterprise",
@@ -2442,6 +2444,22 @@
         "default_severity": "advisory",
         "category": "document-traceability",
         "matches": "**/traceability.json"
+      },
+      {
+        "id": "sca-sast",
+        "path": ".aidlc/sensors/aidlc-sca-sast.md",
+        "fire_on": "write",
+        "default_severity": "advisory",
+        "category": "security",
+        "matches": "**/*.{jar,war,ear,zip,class,json,lock,toml,txt,gradle,kts,yaml,yml,xml,csproj}"
+      },
+      {
+        "id": "opa-terraform",
+        "path": ".aidlc/sensors/aidlc-opa-terraform.md",
+        "fire_on": "write",
+        "default_severity": "advisory",
+        "category": "security",
+        "matches": "**/*.{tf,tf.json}"
       }
     ]
   },
@@ -2583,7 +2601,9 @@
       "required-sections",
       "upstream-coverage",
       "linter",
-      "type-check"
+      "type-check",
+      "sca-sast",
+      "opa-terraform"
     ],
     "scopes": [
       "enterprise",
@@ -2646,6 +2666,22 @@
         "default_severity": "advisory",
         "category": "code-quality",
         "matches": "**/*.{ts,tsx}"
+      },
+      {
+        "id": "sca-sast",
+        "path": ".aidlc/sensors/aidlc-sca-sast.md",
+        "fire_on": "write",
+        "default_severity": "advisory",
+        "category": "security",
+        "matches": "**/*.{jar,war,ear,zip,class,json,lock,toml,txt,gradle,kts,yaml,yml,xml,csproj}"
+      },
+      {
+        "id": "opa-terraform",
+        "path": ".aidlc/sensors/aidlc-opa-terraform.md",
+        "fire_on": "write",
+        "default_severity": "advisory",
+        "category": "security",
+        "matches": "**/*.{tf,tf.json}"
       }
     ]
   },

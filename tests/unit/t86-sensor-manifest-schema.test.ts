@@ -1,9 +1,9 @@
-// covers: function:parseSensorManifest, function:validateSensorManifest, file:sensors/aidlc-claim-sources.md, file:sensors/aidlc-required-sections.md, file:sensors/aidlc-upstream-coverage.md, file:sensors/aidlc-traceability.md, file:sensors/aidlc-linter.md, file:sensors/aidlc-type-check.md
+// covers: function:parseSensorManifest, function:validateSensorManifest, file:sensors/aidlc-claim-sources.md, file:sensors/aidlc-required-sections.md, file:sensors/aidlc-upstream-coverage.md, file:sensors/aidlc-traceability.md, file:sensors/aidlc-linter.md, file:sensors/aidlc-type-check.md, file:sensors/aidlc-sca-sast.md, file:sensors/aidlc-opa-terraform.md
 //
-// t86 — sensor manifest schema for the 6 framework sensors + the legacy
+// t86 — sensor manifest schema for the 8 framework sensors + the legacy
 // negative-case fixtures. Migrated from tests/unit/t86-sensor-manifest-schema.sh
-// (extended plan 40: Part 1 = 7 existence rows, Part 2 = 6 manifests × 5
-// frontmatter rows = 30, Part 3 = 3 negative-fixture rejection rows).
+// (extended plan 52: Part 1 = 9 existence rows, Part 2 = 8 manifests × 5
+// frontmatter rows = 40, Part 3 = 3 negative-fixture rejection rows).
 //
 // Mechanism: none. This is a pure schema / structural check over shipped bytes
 // — no process boundary, no argv/exit/stdout seam, no LLM, zero tokens. The .sh
@@ -29,7 +29,7 @@
 //            - :26  tolerates UNKNOWN keys for forward-compat (so a stray
 //                   `applies_to:` is ignored, NOT rejected — see negative B)
 //   dist/claude/.claude/sensors/aidlc-{required-sections,upstream-coverage,
-//     linter,type-check,claim-sources}.md — the 5 shipped framework manifests.
+//     linter,type-check,claim-sources,sca-sast,opa-terraform}.md — the 7 shipped framework manifests.
 //   tests/fixtures/v05-mr3-sensors-dir/malformed-{unknown-kind,empty-applies-to,
 //     missing-id}.md — legacy negative-case fixtures.
 //
@@ -78,7 +78,7 @@ import {
 const SENSORS_DIR = join(AIDLC_SRC, "sensors");
 const NEG_DIR = join(FIXTURES_DIR, "v05-mr3-sensors-dir");
 
-// The 6 framework manifests, keyed by their expected frontmatter id. id MUST
+// The 8 framework manifests, keyed by their expected frontmatter id. id MUST
 // equal the filename stem minus the `aidlc-` prefix and the `.md` suffix
 // (filename↔id contract). Same roster as the .sh's SENSOR_NAMES.
 const SENSOR_NAMES = [
@@ -88,6 +88,8 @@ const SENSOR_NAMES = [
   "traceability",
   "linter",
   "type-check",
+  "sca-sast",
+  "opa-terraform",
 ] as const;
 
 const manifestPath = (name: string): string =>
@@ -114,16 +116,16 @@ function frontmatterHasAppliesTo(raw: string): boolean {
     .some((line) => /^applies_to:/.test(line));
 }
 
-describe("t86 sensor manifest schema (extended from t86-sensor-manifest-schema.sh, plan 34)", () => {
+describe("t86 sensor manifest schema (extended from t86-sensor-manifest-schema.sh, plan 52)", () => {
   // ===========================================================================
-  // Part 1 — directory + file existence (6 rows).
+  // Part 1 — directory + file existence (9 rows).
   // ===========================================================================
   test("sensors/ directory exists [.sh Part 1]", () => {
     expect(existsSync(SENSORS_DIR), `missing ${SENSORS_DIR}`).toBe(true);
     expect(statSync(SENSORS_DIR).isDirectory()).toBe(true);
   });
 
-  test("each of the 6 framework manifests exists [Part 1 ×6]", () => {
+  test("each of the 8 framework manifests exists [Part 1 ×8]", () => {
     for (const name of SENSOR_NAMES) {
       const f = manifestPath(name);
       expect(existsSync(f), `missing sensors/aidlc-${name}.md`).toBe(true);
@@ -131,7 +133,7 @@ describe("t86 sensor manifest schema (extended from t86-sensor-manifest-schema.s
   });
 
   // ===========================================================================
-  // Part 2 — per-manifest frontmatter shape (6 manifests × 5 checks = 30 rows).
+  // Part 2 — per-manifest frontmatter shape (8 manifests × 5 checks = 40 rows).
   // Each manifest gets ONE test() that runs the REAL validator (stronger than
   // the .sh's awk) and pins the five field literals the .sh asserted.
   // ===========================================================================
@@ -281,14 +283,14 @@ describe("t86 sensor manifest schema (extended from t86-sensor-manifest-schema.s
 
   // Re-count the original migrated assertion budget. The fire/severity enum
   // cases above are additive coverage for the expanded schema.
-  test("covers EXACTLY 40 migrated assertions", () => {
-    const PART1 = 1 + SENSOR_NAMES.length; // dir + 6 files = 7
-    const PART2 = SENSOR_NAMES.length * 5; // 6 manifests × 5 checks = 30
+  test("covers EXACTLY 52 migrated assertions", () => {
+    const PART1 = 1 + SENSOR_NAMES.length; // dir + 8 files = 9
+    const PART2 = SENSOR_NAMES.length * 5; // 8 manifests × 5 checks = 40
     const PART3 = 3; // 3 negative-case fixtures
-    expect(PART1).toBe(7);
-    expect(PART2).toBe(30);
+    expect(PART1).toBe(9);
+    expect(PART2).toBe(40);
     expect(PART3).toBe(3);
-    expect(PART1 + PART2 + PART3).toBe(40);
+    expect(PART1 + PART2 + PART3).toBe(52);
     expect([...SENSOR_NAMES]).toEqual([
       "claim-sources",
       "required-sections",
@@ -296,6 +298,8 @@ describe("t86 sensor manifest schema (extended from t86-sensor-manifest-schema.s
       "traceability",
       "linter",
       "type-check",
+      "sca-sast",
+      "opa-terraform",
     ]);
   });
 });

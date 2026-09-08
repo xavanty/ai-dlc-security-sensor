@@ -1,6 +1,13 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [2.7.2] - 2026-09-05
+
+Add two advisory write-fired security sensors: combined SCA/SAST (`sca-sast`) and Terraform OPA/conftest (`opa-terraform`). **Upgrade:** replace the `dist/<harness>/` tree; no workflow state migration is required.
+
+* `sca-sast` downloads latest Veracode CLI + Pipeline Scan JAR into `aidlc/.aidlc-veracode/` (gitignored, version-check cache), requires `VERACODE_API_KEY_ID` + `VERACODE_API_KEY_SECRET` env vars (exit 127 if missing), drops PATH-probe for `veracode`/`srcclr`, drops `veracode configure` and `srcclr`. Fail bar is Very High + High. Missing tools or creds degrade to tool-unavailable; missing packaged artifact skips SAST with `sast: no-packaged-artifact` rather than failing the fire.
+* `opa-terraform` validates `*.tf` / `*.tf.json` with conftest or opa, using `.aidlc-opa/`, `policy/terraform/`, or bundled AWS default denies (public S3 ACL, `0.0.0.0/0` ingress, explicit `encrypted = false`).
+
 ## [2.7.1] - 2026-09-01
 
 Fix a Plan Approval deadlock that made Code Generation unreachable on solo (non-team) workflows. The Stop hook's read-only `next` probe published the durable active-directive marker on every turn boundary, which bumped the Code Generation authority revision and reset the plan-approval runtime, so the approval challenge minted while answering "Approve Plan" was destroyed before its receipt could be written. The probe no longer publishes that marker for any workflow, matching the read-only contract it already advertised. **Upgrade:** replace the `dist/<harness>/` tree; no workflow state migration is required. Closes #995.

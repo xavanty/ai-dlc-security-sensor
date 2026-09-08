@@ -11,7 +11,7 @@ frames both as control-plane inputs that the compile resolves into each
 stage node.
 
 This chapter covers the manifest *file format* — what a sensor manifest
-contains, how stages import sensors, and how the six shipped manifests
+contains, how stages import sensors, and the eight shipped manifests
 are configured. For the user-facing view of how sensors fire during a
 workflow, see [Rules and the Learning Loop](../guide/09-rules-and-the-learning-loop.md)
 in the User Guide.
@@ -178,9 +178,9 @@ fires for the in-flight workflow (BGP-stability property — see
 | 6 other ideation, 6 other inception, 7 operation markdown stages | `[required-sections, upstream-coverage]` |
 | `user-stories`, `domain-design`, `units-generation` | `[required-sections, upstream-coverage, traceability]` |
 | `build-and-test` | `[required-sections, upstream-coverage, type-check]` (linter intentionally omitted — build runs canonical lint) |
-| `ci-pipeline` | `[required-sections, upstream-coverage, linter, type-check]` |
+| `ci-pipeline` | `[required-sections, upstream-coverage, linter, type-check, sca-sast, opa-terraform]` |
 | 4 per-Unit construction-design stages (`functional-design`, `infrastructure-design`, `nfr-design`, `nfr-requirements`) | `[required-sections, upstream-coverage, linter, type-check, traceability]` |
-| `code-generation` | `[linter, type-check, traceability]` |
+| `code-generation` | `[linter, type-check, traceability, sca-sast, opa-terraform]` |
 
 Forks customise stages by editing the stage's `sensors:` list directly
 — the binding lives next to the thing being customised. A manifest is a
@@ -206,12 +206,14 @@ at compile time.
 | `aidlc-traceability.md` | `**/traceability.json` |
 | `aidlc-linter.md` | `**/*.{ts,js}` |
 | `aidlc-type-check.md` | `**/*.{ts,tsx}` |
+| `aidlc-sca-sast.md` | `**/*.{jar,war,ear,zip,class,json,lock,toml,txt,gradle,kts,yaml,yml,xml,csproj}` |
+| `aidlc-opa-terraform.md` | `**/*.{tf,tf.json}` |
 
 For `fire_on: write`, `matches` is the fire filter: the hook compares the path
 being written against the glob and an entry without a glob never fires. For
 `fire_on: gate`, `gate-start` and `revise` enumerate every existing declared
 deliverable, skip paths outside each sensor's `matches` capability, and dispatch
-only matching paths; an omitted glob accepts every deliverable. All six shipped
+only matching paths; an omitted glob accepts every deliverable. All eight shipped
 manifests declare a glob. The compile resolver copies it into
 `sensors_applicable[]`.
 
@@ -391,12 +393,14 @@ is the one sanctioned stage-frontmatter edit: it grows the import list
 (immutable in shape, not in contents), never the `## Steps` / `## Sensors`
 / `## Learn` body.
 
-The six shipped manifests illustrate the variation these defaults
+The eight shipped manifests illustrate the variation these defaults
 later evolve into: `aidlc-claim-sources.md`, `aidlc-required-sections.md`, and
 `aidlc-upstream-coverage.md` use `timeout_seconds: 5` with their
 artifact-tree `matches` glob (the value shown in the `matches` table above);
 `aidlc-linter.md` uses `30` with `matches: "**/*.{ts,js}"`;
-`aidlc-type-check.md` uses `60` with `matches: "**/*.{ts,tsx}"`.
+`aidlc-type-check.md` uses `60` with `matches: "**/*.{ts,tsx}"`;
+`aidlc-sca-sast.md` uses `300` with a broad source + lockfile glob;
+`aidlc-opa-terraform.md` uses `60` with `matches: "**/*.{tf,tf.json}"`.
 
 ---
 
@@ -442,5 +446,5 @@ is an author error that the parser rejects.
   at workflow start and read off the graph node at fire time. See
   [Plane Architecture](02-plane-architecture.md).
 
-The schema above plus the five shipped manifests in
+The schema above plus the eight shipped manifests in
 `dist/claude/.claude/sensors/` are the working examples.

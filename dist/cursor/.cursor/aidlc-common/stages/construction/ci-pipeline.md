@@ -25,6 +25,8 @@ sensors:
   - upstream-coverage
   - linter
   - type-check
+  - sca-sast
+  - opa-terraform
 scopes:
   - enterprise
   - feature
@@ -100,12 +102,14 @@ Standard 2-option approval (Approve / Request Changes).
 
 This stage's outputs are markdown design artefacts under `<record>/construction/ci-pipeline/`. Some sections include code samples that the code-shape sensors can also flag.
 
-Imports: `required-sections`, `upstream-coverage`, `linter`, `type-check`.
+Imports: `required-sections`, `upstream-coverage`, `linter`, `type-check`, `sca-sast`, `opa-terraform`.
 
 Upstream targets: `code-summary`, `build-and-test-summary`, `build-test-results`.
 
 `linter` and `type-check` inspect matching TypeScript/JavaScript snippets in
-the design outputs.
+the design outputs. `sca-sast` fires on packaged artifact and lockfile/manifest writes
+(downloads latest Veracode CLI + Pipeline Scan JAR);
+`opa-terraform` fires on `*.tf` / `*.tf.json` writes.
 
 ## Learn
 

@@ -8,7 +8,7 @@ rule says "user stories follow Given/When/Then"; a sensor verifies, byte for
 byte, that the required headings are present in the file the agent just wrote.
 
 This chapter narrates the work a harness engineer actually does with sensors:
-understand the six that ship, author a new manifest, and bind it to the stages
+understand the eight that ship, author a new manifest, and bind it to the stages
 that should run it. The full field-by-field contract lives in
 [Sensor System](../reference/07-sensor-system.md) in the Developer Reference —
 this chapter points down to it at each schema decision rather than restating it.
@@ -54,9 +54,9 @@ User Guide.
 
 ---
 
-## The six sensors that ship
+## The eight sensors that ship
 
-Six manifests ship under `.claude/sensors/`, each prefixed `aidlc-`:
+Eight manifests ship under `.claude/sensors/`, each prefixed `aidlc-`:
 
 | Manifest | Dispatch | Checks |
 |----------|----------|--------|
@@ -66,15 +66,18 @@ Six manifests ship under `.claude/sensors/`, each prefixed `aidlc-`:
 | `aidlc-traceability.md` | Write: `**/traceability.json` | Validates stable upstream IDs, statuses, deterministic targets, and derived business-rule orphans |
 | `aidlc-linter.md` | Write: `.ts` / `.js` | Wraps your configured linter (ESLint by default) |
 | `aidlc-type-check.md` | Write: `.ts` / `.tsx` | Wraps your configured type-checker (`tsc` by default) |
+| `aidlc-sca-sast.md` | Write: packaged artifact + lockfile globs | SAST via downloaded Veracode CLI (fallback Pipeline Scan JAR) on packaged artifacts; SCA via downloaded Veracode CLI on lockfile/manifest writes |
+| `aidlc-opa-terraform.md` | Write: `*.tf` / `*.tf.json` | Validates Terraform with conftest/OPA using project policies or bundled AWS defaults |
 
-All six are gated by a `matches:` glob (more on that below): the provenance
+All eight are gated by a `matches:` glob (more on that below): the provenance
 check and two document-shape checks scope to the artifact tree (the shipped manifests carry
 `**/{aidlc-docs,intents}/**` — the per-intent record tree, with the legacy
 `aidlc-docs/` arm kept for a pre-migration project), traceability scopes to
-`**/traceability.json`, and the two code-quality checks to their language globs
-(`**/*.{ts,js}`, `**/*.{ts,tsx}`).
+`**/traceability.json`, the two code-quality checks to their language globs
+(`**/*.{ts,js}`, `**/*.{ts,tsx}`), the security sensors to their respective
+source/lockfile and Terraform globs.
 Read `aidlc-required-sections.md` end to end before authoring your own — it is
-the smallest of the six and shows the whole shape, frontmatter plus prose body.
+the smallest of the eight and shows the whole shape, frontmatter plus prose body.
 
 ---
 

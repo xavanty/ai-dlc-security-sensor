@@ -50,6 +50,8 @@ aidlc/.aidlc-active-space-*.tmp
 # Per-conversation session→intent map (resume rebind, P8): per-user runtime
 # state keyed by Claude Code session_id, never shared truth.
 aidlc/.aidlc-sessions/
+# Veracode CLI + Pipeline Scan download cache (sensor sca-sast)
+aidlc/.aidlc-veracode/
 aidlc/spaces/*/intents/.aidlc-*
 # Engine-shaped sensor caches at any depth, mirroring the #646 fingerprint glob;
 # also covers legacy pre-2.6.94 trees without ignoring every .aidlc-sensors leaf.
